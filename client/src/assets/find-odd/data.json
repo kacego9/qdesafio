@@ -1,0 +1,130 @@
+[
+    {
+        "id": "1",
+        "type": "question",
+        "level": "intermediate",
+        "urlBackground": "assets/find-odd/background.gif",
+        "urlRepeat": "assets/find-odd/img/1_0.webp",
+        "urlUnique": "assets/find-odd/img/1_1.webp"
+    },
+    {
+        "id": "2",
+        "type": "question",
+        "level": "intermediate",
+        "urlBackground": "assets/find-odd/background.gif",
+        "urlRepeat": "assets/find-odd/img/2_0.webp",
+        "urlUnique": "assets/find-odd/img/2_1.webp"
+    },
+    {
+        "id": "3",
+        "type": "question",
+        "level": "intermediate",
+        "urlBackground": "assets/find-odd/background.gif",
+        "urlRepeat": "assets/find-odd/img/3_0.webp",
+        "urlUnique": "assets/find-odd/img/3_1.webp"
+    },
+    {
+        "id": "4",
+        "type": "question",
+        "level": "intermediate",
+        "urlBackground": "assets/find-odd/background.gif",
+        "urlRepeat": "assets/find-odd/img/4_0.webp",
+        "urlUnique": "assets/find-odd/img/4_1.webp"
+    },
+    {
+        "id": "5",
+        "type": "question",
+        "level": "intermediate",
+        "urlBackground": "assets/find-odd/background.gif",
+        "urlRepeat": "assets/find-odd/img/5_0.webp",
+        "urlUnique": "assets/find-odd/img/5_1.webp"
+    },
+    {
+        "id": "6",
+        "type": "question",
+        "level": "intermediate",
+        "urlBackground": "assets/find-odd/background.gif",
+        "urlRepeat": "assets/find-odd/img/6_0.webp",
+        "urlUnique": "assets/find-odd/img/6_1.webp"
+    },
+    {
+        "id": "7",
+        "type": "question",
+        "level": "intermediate",
+        "urlBackground": "assets/find-odd/background.gif",
+        "urlRepeat": "assets/find-odd/img/7_0.webp",
+        "urlUnique": "assets/find-odd/img/7_1.webp"
+    },
+    {
+        "id": "8",
+        "type": "question",
+        "level": "intermediate",
+        "urlBackground": "assets/find-odd/background.gif",
+        "urlRepeat": "assets/find-odd/img/8_0.webp",
+        "urlUnique": "assets/find-odd/img/8_1.webp"
+    },
+    {
+        "id": "9",
+        "type": "question",
+        "level": "intermediate",
+        "urlBackground": "assets/find-odd/background.gif",
+        "urlRepeat": "assets/find-odd/img/9_0.webp",
+        "urlUnique": "assets/find-odd/img/9_1.webp"
+    },
+    {
+        "id": "10",
+        "type": "question",
+        "level": "intermediate",
+        "urlBackground": "assets/find-odd/background.gif",
+        "urlRepeat": "assets/find-odd/img/10_0.webp",
+        "urlUnique": "assets/find-odd/img/10_1.webp"
+    },
+    {
+        "id": "11",
+        "type": "question",
+        "level": "intermediate",
+        "urlBackground": "assets/find-odd/background.gif",
+        "urlRepeat": "assets/find-odd/img/11_0.webp",
+        "urlUnique": "assets/find-odd/img/11_1.webp"
+    },
+    {
+        "id": "12",
+        "type": "question",
+        "level": "intermediate",
+        "urlBackground": "assets/find-odd/background.gif",
+        "urlRepeat": "assets/find-odd/img/12_0.webp",
+        "urlUnique": "assets/find-odd/img/12_1.webp"
+    },
+    {
+        "id": "13",
+        "type": "question",
+        "level": "intermediate",
+        "urlBackground": "assets/find-odd/background.gif",
+        "urlRepeat": "assets/find-odd/img/13_0.webp",
+        "urlUnique": "assets/find-odd/img/13_1.webp"
+    },
+    {
+        "id": "14",
+        "type": "question",
+        "level": "intermediate",
+        "urlBackground": "assets/find-odd/background.gif",
+        "urlRepeat": "assets/find-odd/img/14_0.webp",
+        "urlUnique": "assets/find-odd/img/14_1.webp"
+    },
+    {
+        "id": "15",
+        "type": "question",
+        "level": "intermediate",
+        "urlBackground": "assets/find-odd/background.gif",
+        "urlRepeat": "assets/find-odd/img/15_0.webp",
+        "urlUnique": "assets/find-odd/img/15_1.webp"
+    },
+    {
+        "id": "16",
+        "type": "question",
+        "level": "intermediate",
+        "urlBackground": "assets/find-odd/background.gif",
+        "urlRepeat": "assets/find-odd/img/16_0.webp",
+        "urlUnique": "assets/find-odd/img/16_1.webp"
+    }
+]

@@ -1,0 +1,262 @@
+<app-solo-onboarding *ngIf="showOnboarding" (finishEvent)="onOnboardingFinished()"></app-solo-onboarding>
+
+<!-- Overlay flash en blink (200ms cuando cambia de posición) -->
+<div *ngIf="blinkFlashing" class="blink-flash">
+  <div class="blink-flash-emoji">{{ variantEmoji }}</div>
+</div>
+
+<!-- Loading mientras se prepara el nivel -->
+<section *ngIf="phase === 'loading'" class="stage loading-stage">
+  <div class="loading-dots"><span></span><span></span><span></span></div>
+</section>
+
+<!-- ============================================================
+     INTRO DE VARIANTE (5s overlay)
+     ============================================================ -->
+<section *ngIf="phase === 'variantIntro'" class="stage intro-stage">
+  <button class="intro-close" (click)="goLevels()" [attr.aria-label]="'solo.exit' | t">
+    <span>✕</span>
+    <span>{{ 'solo.exit' | t }}</span>
+  </button>
+  <div class="intro-card">
+    <div class="intro-emoji">{{ variantEmoji }}</div>
+    <div class="intro-tag">{{ 'solo.variant.tag' | t }} · {{ 'solo.level' | t }} {{ level.label }}</div>
+    <div class="intro-name">{{ variantLabel }}</div>
+    <div class="intro-hint">{{ variantHint }}</div>
+    <div class="intro-progress">
+      <span class="ip-bar"></span>
+    </div>
+    <button class="intro-skip" (click)="skipIntro()">{{ 'solo.startNow' | t }} →</button>
+  </div>
+</section>
+
+<!-- ============================================================
+     COUNTDOWN
+     ============================================================ -->
+<section *ngIf="phase === 'countdown'" class="stage countdown-stage">
+  <div class="cd-content">
+    <div class="cd-tag">{{ variantEmoji }} {{ variantLabel }}</div>
+    <div class="cd-label">{{ 'countdown.getReady' | t }}</div>
+    <div class="cd-number" [attr.data-n]="countdownValue">{{ countdownValue }}</div>
+    <div class="cd-progress">
+      {{ 'solo.roundOf' | t : { current: currentRoundNumber + 1, total: level.rounds } }}
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FASE DE JUEGO (playing, flashSequence, flashRecall, roundResult)
+     ============================================================ -->
+<section *ngIf="phase === 'playing' || phase === 'flashSequence' || phase === 'flashRecall' || phase === 'roundResult'"
+         class="stage playing-stage">
+
+  <!-- Barra única de info: salir + nivel/ronda + modo + tiempo + score -->
+  <header class="game-bar">
+    <button class="gb-exit" (click)="goLevels()" [attr.aria-label]="'solo.exit' | t">✕</button>
+
+    <div class="gb-info">
+      <span class="gb-mode">{{ variantEmoji }} {{ variantLabel }}</span>
+      <span class="gb-sep">·</span>
+      <span class="gb-level">L{{ level.label }} R{{ currentRoundNumber }}/{{ level.rounds }}</span>
+      <span *ngIf="showProgress" class="gb-progress">
+        {{ correctTapped.length }}/{{ correctPositions.length }}
+      </span>
+    </div>
+
+    <div class="gb-time" [class.danger]="timeRemaining <= 3">
+      ⏱ {{ timeRemaining }}
+    </div>
+
+    <div class="gb-score">{{ score }}</div>
+  </header>
+
+  <!-- Mensaje de fase flash -->
+  <div *ngIf="phase === 'flashSequence'" class="flash-banner">
+    👁️ {{ 'solo.variant.flash.watching' | t }}
+  </div>
+  <div *ngIf="phase === 'flashRecall'" class="flash-banner recall">
+    🎯 {{ 'solo.variant.flash.repeat' | t }}
+    <span class="seq-progress">{{ flashUserInput.length }} / {{ flashSequence.length }}</span>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="!imagesLoaded" class="loading-center">
+    <div class="loading-dots"><span></span><span></span><span></span></div>
+  </div>
+
+  <!-- BOARD -->
+  <div class="board-wrapper" *ngIf="imagesLoaded && currentQuestion">
+    <div class="board"
+         [class.flash-mode]="variant === 'flash'"
+         [style.width.px]="boardWidth"
+         [style.height.px]="boardHeight">
+
+      <!-- Cada celda del grid -->
+      <ng-container *ngFor="let cell of gridCells; trackBy: trackByPosition">
+        <!-- Imagen "fondo" (la repetida): siempre se renderiza salvo en flash -->
+        <img *ngIf="variant !== 'flash' && !shouldShowUnique(cell.position)"
+             [src]="currentQuestion.urlRepeat"
+             class="cell-img"
+             [class.disabled]="youAnswered"
+             [class.wrong-pick]="youSelectedPosition === cell.position && !youAnsweredCorrect"
+             [style.top]="cell.top"
+             [style.left]="cell.left"
+             [style.width.px]="imageSize"
+             [style.height.px]="imageSize"
+             (click)="selectCell(cell.position)"
+             draggable="false"
+             alt="" />
+
+        <!-- Imagen "única" (solo donde corresponde según el modo) -->
+        <img *ngIf="variant !== 'flash' && shouldShowUnique(cell.position)"
+             [src]="currentQuestion.urlUnique"
+             class="cell-img unique"
+             [class.disabled]="youAnswered"
+             [class.flipped]="mirrored"
+             [class.tapped]="correctTapped.includes(cell.position)"
+             [style.top]="cell.top"
+             [style.left]="cell.left"
+             [style.width.px]="imageSize"
+             [style.height.px]="imageSize"
+             (click)="selectCell(cell.position)"
+             draggable="false"
+             alt="" />
+
+        <!-- Celda neutra para flash (todas idénticas, sin imagen) -->
+        <div *ngIf="variant === 'flash'"
+             class="flash-cell"
+             [class.highlight]="isFlashHighlighted(cell.position)"
+             [class.tapped]="flashUserInput.includes(cell.position)"
+             [class.disabled]="phase === 'flashSequence'"
+             [style.top]="cell.top"
+             [style.left]="cell.left"
+             [style.width.px]="imageSize"
+             [style.height.px]="imageSize"
+             (click)="phase === 'flashRecall' && selectCell(cell.position)">
+        </div>
+      </ng-container>
+
+      <!-- Badges ✅ durante reveal: muestra correctas. Si fue fallo en count/grow,
+           también muestra ❌ sobre las que NO se tocaron (las que faltaban) -->
+      <ng-container *ngIf="revealCorrect">
+        <div *ngFor="let p of correctPositions"
+             class="reveal-badge"
+             [class.was-tapped]="correctTapped.includes(p)"
+             [class.was-missed]="!correctTapped.includes(p) && !youAnsweredCorrect"
+             [style.top]="cellPos(p).top"
+             [style.left]="cellPos(p).left"
+             [style.width.px]="imageSize"
+             [style.height.px]="imageSize">
+          <span *ngIf="correctTapped.includes(p) || youAnsweredCorrect">✅</span>
+          <span *ngIf="!correctTapped.includes(p) && !youAnsweredCorrect">❌</span>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+
+  <!-- Botón Confirmar (solo modos count/grow) -->
+  <div *ngIf="requiresConfirm && phase === 'playing' && !youAnswered" class="confirm-bar">
+    <button class="confirm-btn"
+            [disabled]="correctTapped.length === 0"
+            (click)="confirmAnswer()">
+      ✓ {{ 'solo.confirm.button' | t }}
+      <span class="cb-count" *ngIf="correctTapped.length > 0">({{ correctTapped.length }})</span>
+    </button>
+  </div>
+</section>
+
+<!-- ============================================================
+     FINAL
+     ============================================================ -->
+<section *ngIf="phase === 'final'" class="stage final-stage">
+  <div class="final-card">
+
+    <!-- ESCENARIO A: Auto-reintento (no llegó al 70% o sudden death) -->
+    <div *ngIf="autoRetryPending" class="retry-banner">
+      <div class="rb-emoji">{{ suddenDeathOver ? '💀' : '⚠️' }}</div>
+      <div class="rb-title">
+        {{ suddenDeathOver ? ('solo.variant.sudden.eliminated' | t) : ('solo.failed.title' | t) }}
+      </div>
+      <div class="rb-text">
+        {{ suddenDeathOver ? ('solo.variant.sudden.eliminatedText' | t) : ('solo.failed.text' | t : { percent: correctPercent }) }}
+      </div>
+      <div class="rb-percent">{{ correctPercent }}%</div>
+      <div class="rb-text">{{ 'solo.failed.retrying' | t }}</div>
+      <div class="rb-progress"><span class="rb-bar"></span></div>
+    </div>
+
+    <!-- ESCENARIO B: Pasó el último nivel -->
+    <div *ngIf="!autoRetryPending && isLastLevel && finalStarsEarned >= 1" class="allDone-banner">
+      <div class="ad-emoji">🏆</div>
+      <div class="ad-title">{{ 'solo.complete.allDone' | t }}</div>
+      <div class="ad-text">{{ 'solo.complete.allDoneText' | t }}</div>
+    </div>
+
+    <!-- ESCENARIO C: Pasó el nivel normal (cualquiera) -->
+    <ng-container *ngIf="!autoRetryPending">
+      <div class="confetti" *ngIf="finalStarsEarned >= 2">
+        <span *ngFor="let _ of [].constructor(30); let i = index"
+              [style.--i]="i"
+              [style.--d]="i * 0.15"></span>
+      </div>
+
+      <div class="final-tag">{{ 'solo.levelComplete' | t }}</div>
+      <div class="final-level">
+        {{ 'solo.level' | t }} {{ level.label }} · {{ variantEmoji }} {{ variantLabel }}
+      </div>
+
+      <div class="stars-display">
+        <span class="star" *ngFor="let earned of starsArray; let i = index"
+              [class.filled]="earned"
+              [style.animation-delay]="(i * 0.25) + 's'">★</span>
+      </div>
+
+      <div class="score-display">
+        <div class="sd-row main">
+          <span class="sd-label">{{ 'solo.finalScore' | t }}</span>
+          <span class="sd-value">{{ score }}</span>
+        </div>
+        <div class="sd-badge" *ngIf="finalIsNewBest">🎉 {{ 'solo.newBest' | t }}</div>
+        <div class="sd-row">
+          <span>✓ {{ 'solo.correct' | t }}: {{ correctCount }}</span>
+          <span>✕ {{ 'solo.wrong' | t }}: {{ wrongCount }}</span>
+        </div>
+        <div class="sd-rank" *ngIf="finalRank">
+          🏆 {{ 'solo.rank' | t : { rank: finalRank, total: finalRankTotal } }}
+        </div>
+      </div>
+
+      <div class="unlock-banner" *ngIf="finalNewlyUnlocked">
+        🔓 {{ 'solo.unlocked' | t : { level: finalNewlyUnlocked } }}
+      </div>
+
+      <!-- Acciones para nivel pasado -->
+      <div class="final-actions">
+        <!-- Si es último nivel: botón GRANDE para empezar de cero -->
+        <button *ngIf="isLastLevel" class="f-btn primary big" (click)="restartFromLevel1()">
+          <span class="f-btn-icon">🔄</span>
+          <span>{{ 'solo.complete.restart' | t }}</span>
+        </button>
+
+        <!-- Camino normal: siguiente nivel -->
+        <button *ngIf="!isLastLevel && hasNextLevel" class="f-btn primary big" (click)="nextLevel()">
+          <span class="f-btn-icon">⏭</span>
+          <span>{{ 'solo.nextLevel' | t }}</span>
+        </button>
+
+        <button class="f-btn secondary" (click)="retryLevel()">
+          <span class="f-btn-icon">↻</span>
+          <span>{{ 'solo.retry' | t }}</span>
+        </button>
+        <button class="f-btn secondary" (click)="goLevels()">
+          <span class="f-btn-icon">📋</span>
+          <span>{{ 'solo.allLevels' | t }}</span>
+        </button>
+        <button class="f-btn ghost" (click)="goHome()">
+          <span class="f-btn-icon">🏠</span>
+          <span>{{ 'final.home' | t }}</span>
+        </button>
+      </div>
+    </ng-container>
+  </div>
+</section>

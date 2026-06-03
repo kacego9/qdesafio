@@ -1,0 +1,354 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  color: #fff;
+}
+
+.htp-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 80px 20px 60px;
+  animation: htpIn 0.4s ease;
+}
+@keyframes htpIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.htp-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 44px;
+}
+.back-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font-size: 22px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.back-btn:hover { background: rgba(255, 255, 255, 0.1); }
+
+.head-text { flex: 1; }
+.head-tag {
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  color: #00f5ff;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.htp-head h1 {
+  font-size: clamp(28px, 5vw, 42px);
+  font-weight: 900;
+  margin: 4px 0 8px;
+  line-height: 1.05;
+  background: linear-gradient(90deg, #ff006e, #00f5ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.head-sub {
+  margin: 0;
+  color: #b8a9d9;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* ============================================================
+   Secciones
+   ============================================================ */
+.htp-section {
+  margin-bottom: 52px;
+}
+.sec-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+.sec-tag {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #00f5ff;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.htp-section h2 {
+  font-size: clamp(22px, 4vw, 30px);
+  font-weight: 900;
+  margin: 0;
+}
+
+/* ============================================================
+   Steps (cómo se juega)
+   ============================================================ */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+}
+.step {
+  position: relative;
+  padding: 28px 22px;
+  background: rgba(20, 10, 40, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  text-align: center;
+  transition: transform 0.2s, border-color 0.2s;
+}
+.step:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 0, 110, 0.3);
+}
+.step-num {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff006e, #8338ec);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 14px;
+  box-shadow: 0 6px 16px rgba(255, 0, 110, 0.4);
+}
+.step-emoji {
+  font-size: 50px;
+  margin-bottom: 12px;
+}
+.step h3 {
+  font-size: 18px;
+  font-weight: 800;
+  margin: 0 0 8px;
+}
+.step p {
+  font-size: 14px;
+  color: #b8a9d9;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ============================================================
+   Info grid
+   ============================================================ */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+.info-card {
+  padding: 22px 18px;
+  background: rgba(20, 10, 40, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  transition: transform 0.2s;
+}
+.info-card:hover { transform: translateY(-3px); }
+.info-emoji { font-size: 32px; margin-bottom: 8px; }
+.info-card h3 {
+  font-size: 16px;
+  font-weight: 800;
+  margin: 0 0 6px;
+}
+.info-card p {
+  font-size: 13px;
+  color: #b8a9d9;
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* ============================================================
+   Tabla de estrellas
+   ============================================================ */
+.stars-table {
+  margin-top: 24px;
+  padding: 22px;
+  background: rgba(20, 10, 40, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+}
+.st-title {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: #b8a9d9;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin: 0 0 16px;
+}
+.st-rows { display: flex; flex-direction: column; gap: 10px; }
+.st-row {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+}
+.st-stars {
+  font-size: 22px;
+  letter-spacing: 2px;
+  color: rgba(255, 255, 255, 0.2);
+  min-width: 90px;
+}
+.st-stars .filled {
+  color: #ffbe0b;
+  text-shadow: 0 0 8px rgba(255, 190, 11, 0.5);
+}
+.st-pct {
+  font-family: 'Courier New', monospace;
+  font-weight: 800;
+  font-size: 14px;
+  color: #ffbe0b;
+  min-width: 60px;
+}
+.st-text {
+  font-size: 13px;
+  color: #cfc4e8;
+}
+
+/* ============================================================
+   Tips
+   ============================================================ */
+.tips-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.tips-list li {
+  display: flex;
+  gap: 16px;
+  padding: 18px 20px;
+  background: rgba(20, 10, 40, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  transition: border-color 0.2s;
+}
+.tips-list li:hover {
+  border-color: rgba(0, 245, 255, 0.25);
+}
+.tip-emoji {
+  font-size: 28px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.tips-list strong {
+  display: block;
+  font-size: 15px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+.tips-list p {
+  margin: 0;
+  font-size: 13px;
+  color: #b8a9d9;
+  line-height: 1.5;
+}
+
+/* ============================================================
+   FAQ
+   ============================================================ */
+.faq-item {
+  background: rgba(20, 10, 40, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.faq-item:hover {
+  border-color: rgba(0, 245, 255, 0.25);
+}
+.faq-item summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 16px 20px;
+  font-weight: 700;
+  font-size: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after {
+  content: '+';
+  font-size: 22px;
+  color: #00f5ff;
+  font-weight: 700;
+  transition: transform 0.2s;
+  margin-left: 12px;
+}
+.faq-item[open] summary::after {
+  transform: rotate(45deg);
+}
+.faq-item p {
+  margin: 0;
+  padding: 0 20px 18px;
+  color: #b8a9d9;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ============================================================
+   CTA final
+   ============================================================ */
+.htp-cta {
+  text-align: center;
+  padding: 40px 20px;
+  margin-top: 30px;
+  background: linear-gradient(160deg, rgba(255, 0, 110, 0.12), rgba(20, 10, 40, 0.7));
+  border: 1px solid rgba(255, 0, 110, 0.25);
+  border-radius: 24px;
+}
+.htp-cta h2 {
+  font-size: clamp(22px, 4vw, 30px);
+  font-weight: 900;
+  margin: 0 0 8px;
+}
+.htp-cta p {
+  font-size: 14px;
+  color: #b8a9d9;
+  margin: 0 0 22px;
+  line-height: 1.5;
+}
+.cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 28px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #ff006e, #8338ec);
+  color: #fff;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  box-shadow: 0 12px 30px rgba(255, 0, 110, 0.45);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.cta-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 38px rgba(255, 0, 110, 0.55);
+}
+
+@media (max-width: 520px) {
+  .st-row { grid-template-columns: 1fr; gap: 4px; text-align: center; }
+}

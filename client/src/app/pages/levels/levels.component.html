@@ -1,0 +1,63 @@
+<section class="levels-page">
+  <header class="lp-head">
+    <button class="back-btn" (click)="goHome()" [attr.aria-label]="'identity.back' | t">←</button>
+    <div class="head-text">
+      <div class="head-tag">{{ 'levels.tag' | t }}</div>
+      <h1>{{ 'levels.title' | t }}</h1>
+    </div>
+  </header>
+
+  <!-- Resumen de progreso -->
+  <div class="progress-summary">
+    <div class="ps-card">
+      <div class="ps-emoji">⭐</div>
+      <div class="ps-num">{{ progress.totalStars }} / {{ levels.length * 3 }}</div>
+      <div class="ps-label">{{ 'levels.totalStars' | t }}</div>
+    </div>
+    <div class="ps-card">
+      <div class="ps-emoji">🏆</div>
+      <div class="ps-num">{{ progress.totalScore }}</div>
+      <div class="ps-label">{{ 'levels.totalScore' | t }}</div>
+    </div>
+    <div class="ps-card" *ngIf="progress.dailyStreak > 0">
+      <div class="ps-emoji">🔥</div>
+      <div class="ps-num">{{ progress.dailyStreak }}</div>
+      <div class="ps-label">{{ 'levels.dailyStreak' | t }}</div>
+    </div>
+  </div>
+
+  <!-- Barra global -->
+  <div class="global-progress">
+    <div class="gp-bar">
+      <div class="gp-fill" [style.width.%]="globalPercent"></div>
+    </div>
+    <div class="gp-text">{{ globalPercent }}% {{ 'levels.completed' | t }}</div>
+  </div>
+
+  <!-- Aviso: variante aleatoria por partida -->
+  <div class="variant-info">
+    🎲 <span>{{ 'levels.randomVariant' | t }}</span>
+  </div>
+
+  <!-- Grid de niveles -->
+  <div class="levels-grid">
+    <button
+      *ngFor="let lvl of levels; trackBy: trackById"
+      class="level-card"
+      [class.locked]="!isUnlocked(lvl)"
+      [class.completed]="starsFor(lvl) > 0"
+      [disabled]="!isUnlocked(lvl)"
+      (click)="openLevel(lvl)"
+    >
+      <div class="lc-stars" *ngIf="isUnlocked(lvl)">
+        <span class="lc-star" *ngFor="let s of starsArray(starsFor(lvl))" [class.filled]="s">★</span>
+      </div>
+      <div class="lc-id">{{ lvl.label }}</div>
+      <div class="lc-meta" *ngIf="isUnlocked(lvl)">
+        {{ lvl.rows }}×{{ lvl.columns }} · {{ lvl.timeLimit }}s
+      </div>
+      <div class="lc-lock" *ngIf="!isUnlocked(lvl)">🔒</div>
+      <div class="lc-best" *ngIf="bestScoreFor(lvl) > 0">{{ bestScoreFor(lvl) }} {{ 'round.points' | t }}</div>
+    </button>
+  </div>
+</section>

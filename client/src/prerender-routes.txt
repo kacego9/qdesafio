@@ -1,0 +1,7 @@
+/
+/home
+/levels
+/how-to-play
+/leaderboard
+/create
+/join

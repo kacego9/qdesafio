@@ -1,0 +1,47 @@
+# Q-Desafío — find the odd one out puzzle game
+# https://qdesafio.com
+
+User-agent: *
+Allow: /
+
+# Las salas multijugador son privadas y efímeras (códigos de 4 letras random) — no indexar
+Disallow: /room/
+Disallow: /join/
+
+# Los identificadores con códigos no aportan SEO
+Disallow: /*?code=
+Disallow: /*?roomCode=
+
+# Permitir explícitamente los crawlers principales
+User-agent: Googlebot
+Allow: /
+Disallow: /room/
+Disallow: /join/
+
+User-agent: Bingbot
+Allow: /
+Disallow: /room/
+Disallow: /join/
+
+User-agent: Slurp
+Allow: /
+Disallow: /room/
+
+User-agent: DuckDuckBot
+Allow: /
+Disallow: /room/
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+# Sin retraso de rastreo (sitio rápido)
+Crawl-delay: 0
+
+# Sitemap
+Sitemap: https://qdesafio.com/sitemap.xml

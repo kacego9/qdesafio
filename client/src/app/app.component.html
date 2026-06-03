@@ -1,0 +1,19 @@
+<!-- Top bar fija con logo y selector de idioma -->
+<header class="top-bar">
+  <a routerLink="/home" class="brand" aria-label="Q-Desafío">
+    <span class="brand-emoji">🎯</span>
+    <span class="brand-text">Q-Desafío</span>
+  </a>
+  <app-language-selector></app-language-selector>
+</header>
+
+<!-- Fondo animado -->
+<div class="bg-blobs" aria-hidden="true">
+  <span class="blob b1"></span>
+  <span class="blob b2"></span>
+  <span class="blob b3"></span>
+</div>
+
+<main>
+  <router-outlet></router-outlet>
+</main>

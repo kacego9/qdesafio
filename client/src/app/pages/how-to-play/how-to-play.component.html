@@ -1,0 +1,187 @@
+<section class="htp-page">
+  <header class="htp-head">
+    <button class="back-btn" (click)="goHome()" [attr.aria-label]="'identity.back' | t">←</button>
+    <div class="head-text">
+      <div class="head-tag">{{ 'howToPlay.tag' | t }}</div>
+      <h1>{{ 'howToPlay.title' | t }}</h1>
+      <p class="head-sub">{{ 'howToPlay.subtitle' | t }}</p>
+    </div>
+  </header>
+
+  <!-- ¿Cómo se juega? -->
+  <section class="htp-section">
+    <div class="sec-header">
+      <div class="sec-tag">{{ 'home.how.tag' | t }}</div>
+      <h2>{{ 'home.how.title' | t }}</h2>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-emoji">👀</div>
+        <h3>{{ 'home.how.step1.title' | t }}</h3>
+        <p>{{ 'home.how.step1.text' | t }}</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-emoji">⚡</div>
+        <h3>{{ 'home.how.step2.title' | t }}</h3>
+        <p>{{ 'home.how.step2.text' | t }}</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-emoji">⭐</div>
+        <h3>{{ 'home.how.step3.title' | t }}</h3>
+        <p>{{ 'home.how.step3.text' | t }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sistema de puntuación -->
+  <section class="htp-section">
+    <div class="sec-header">
+      <div class="sec-tag">{{ 'howToPlay.scoring.tag' | t }}</div>
+      <h2>{{ 'howToPlay.scoring.title' | t }}</h2>
+    </div>
+
+    <div class="info-grid">
+      <article class="info-card">
+        <div class="info-emoji">⏱️</div>
+        <h3>{{ 'howToPlay.scoring.speed.title' | t }}</h3>
+        <p>{{ 'howToPlay.scoring.speed.text' | t }}</p>
+      </article>
+      <article class="info-card">
+        <div class="info-emoji">🎯</div>
+        <h3>{{ 'howToPlay.scoring.accuracy.title' | t }}</h3>
+        <p>{{ 'howToPlay.scoring.accuracy.text' | t }}</p>
+      </article>
+      <article class="info-card">
+        <div class="info-emoji">⭐</div>
+        <h3>{{ 'howToPlay.scoring.stars.title' | t }}</h3>
+        <p>{{ 'howToPlay.scoring.stars.text' | t }}</p>
+      </article>
+    </div>
+
+    <!-- Tabla de estrellas -->
+    <div class="stars-table">
+      <h3 class="st-title">{{ 'howToPlay.scoring.starsTable' | t }}</h3>
+      <div class="st-rows">
+        <div class="st-row">
+          <div class="st-stars"><span class="filled">★</span>☆☆</div>
+          <div class="st-pct">≥ 40%</div>
+          <div class="st-text">{{ 'howToPlay.scoring.star1' | t }}</div>
+        </div>
+        <div class="st-row">
+          <div class="st-stars"><span class="filled">★★</span>☆</div>
+          <div class="st-pct">≥ 65%</div>
+          <div class="st-text">{{ 'howToPlay.scoring.star2' | t }}</div>
+        </div>
+        <div class="st-row">
+          <div class="st-stars"><span class="filled">★★★</span></div>
+          <div class="st-pct">≥ 90%</div>
+          <div class="st-text">{{ 'howToPlay.scoring.star3' | t }}</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modos de juego -->
+  <section class="htp-section">
+    <div class="sec-header">
+      <div class="sec-tag">{{ 'howToPlay.modes.tag' | t }}</div>
+      <h2>{{ 'howToPlay.modes.title' | t }}</h2>
+    </div>
+
+    <div class="info-grid">
+      <article class="info-card">
+        <div class="info-emoji">🎯</div>
+        <h3>{{ 'home.modes.solo.title' | t }}</h3>
+        <p>{{ 'howToPlay.modes.solo' | t }}</p>
+      </article>
+      <article class="info-card">
+        <div class="info-emoji">👥</div>
+        <h3>{{ 'home.modes.create.title' | t }}</h3>
+        <p>{{ 'howToPlay.modes.multi' | t }}</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- Tips -->
+  <section class="htp-section">
+    <div class="sec-header">
+      <div class="sec-tag">{{ 'howToPlay.tips.tag' | t }}</div>
+      <h2>{{ 'howToPlay.tips.title' | t }}</h2>
+    </div>
+
+    <ul class="tips-list">
+      <li>
+        <span class="tip-emoji">🔍</span>
+        <div>
+          <strong>{{ 'howToPlay.tips.t1.title' | t }}</strong>
+          <p>{{ 'howToPlay.tips.t1.text' | t }}</p>
+        </div>
+      </li>
+      <li>
+        <span class="tip-emoji">⚡</span>
+        <div>
+          <strong>{{ 'howToPlay.tips.t2.title' | t }}</strong>
+          <p>{{ 'howToPlay.tips.t2.text' | t }}</p>
+        </div>
+      </li>
+      <li>
+        <span class="tip-emoji">🧘</span>
+        <div>
+          <strong>{{ 'howToPlay.tips.t3.title' | t }}</strong>
+          <p>{{ 'howToPlay.tips.t3.text' | t }}</p>
+        </div>
+      </li>
+      <li>
+        <span class="tip-emoji">🔄</span>
+        <div>
+          <strong>{{ 'howToPlay.tips.t4.title' | t }}</strong>
+          <p>{{ 'howToPlay.tips.t4.text' | t }}</p>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <!-- FAQ -->
+  <section class="htp-section">
+    <div class="sec-header">
+      <div class="sec-tag">{{ 'home.faq.tag' | t }}</div>
+      <h2>{{ 'home.faq.title' | t }}</h2>
+    </div>
+
+    <details class="faq-item">
+      <summary>{{ 'home.faq.q1.q' | t }}</summary>
+      <p>{{ 'home.faq.q1.a' | t }}</p>
+    </details>
+    <details class="faq-item">
+      <summary>{{ 'home.faq.q2.q' | t }}</summary>
+      <p>{{ 'home.faq.q2.a' | t }}</p>
+    </details>
+    <details class="faq-item">
+      <summary>{{ 'home.faq.q3.q' | t }}</summary>
+      <p>{{ 'home.faq.q3.a' | t }}</p>
+    </details>
+    <details class="faq-item">
+      <summary>{{ 'home.faq.q4.q' | t }}</summary>
+      <p>{{ 'home.faq.q4.a' | t }}</p>
+    </details>
+    <details class="faq-item">
+      <summary>{{ 'home.faq.q5.q' | t }}</summary>
+      <p>{{ 'home.faq.q5.a' | t }}</p>
+    </details>
+  </section>
+
+  <!-- CTA final -->
+  <section class="htp-cta">
+    <h2>{{ 'home.finalCta.title' | t }}</h2>
+    <p>{{ 'home.finalCta.text' | t }}</p>
+    <button class="cta-btn" (click)="goSolo()">
+      <span>🎯</span>
+      <span>{{ hasProgress ? ('home.continue' | t) : ('home.playNow' | t) }}</span>
+      <span>→</span>
+    </button>
+  </section>
+</section>

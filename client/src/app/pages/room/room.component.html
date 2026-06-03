@@ -1,0 +1,391 @@
+<!-- Overlay flash en blink (multi) -->
+<div *ngIf="blinkFlashing" class="blink-flash">
+  <div class="blink-flash-emoji">{{ variantEmoji }}</div>
+</div>
+
+<!-- ============================================================
+     LOBBY
+     ============================================================ -->
+<section *ngIf="state && phase === 'lobby'" class="stage lobby-stage">
+  <div class="lobby-grid">
+    <!-- Panel izq: código + configuración -->
+    <div class="lobby-main">
+      <!-- Código destacado -->
+      <div class="code-hero">
+        <div class="code-tag">{{ 'lobby.code' | t }}</div>
+        <div class="code-big">{{ state.code }}</div>
+        <div class="code-actions">
+          <button class="code-copy" (click)="copyCode()">
+            <span *ngIf="!copied">📋 {{ 'lobby.copyCode' | t }}</span>
+            <span *ngIf="copied">✓ {{ 'lobby.copied' | t }}</span>
+          </button>
+        </div>
+        <div class="code-hint">{{ 'lobby.share' | t }}</div>
+      </div>
+
+      <!-- Configuración (solo host interactúa, el resto lo ve read-only) -->
+      <div class="settings-card">
+        <h3>{{ 'lobby.settings' | t }}</h3>
+        <p class="host-only" *ngIf="!isHost">{{ 'lobby.hostOnly' | t }}</p>
+
+        <!-- Dificultad -->
+        <div class="setting-group">
+          <label>{{ 'lobby.difficulty' | t }}</label>
+          <div class="diff-grid">
+            <button
+              type="button"
+              class="diff-card"
+              *ngFor="let d of difficulties"
+              [class.active]="state.settings.difficultyId === d.id"
+              [disabled]="!isHost"
+              (click)="selectDifficulty(d.id)"
+            >
+              <div class="de">{{ d.emoji }}</div>
+              <div class="dl">{{ d.labelKey | t }}</div>
+              <div class="dd">{{ d.descKey | t }}</div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Rondas -->
+        <div class="setting-group">
+          <label>{{ 'lobby.rounds' | t }}</label>
+          <div class="rounds-row">
+            <button
+              type="button"
+              class="round-chip"
+              *ngFor="let n of roundOptions"
+              [class.active]="state.settings.totalRounds === n"
+              [disabled]="!isHost"
+              (click)="selectRounds(n)"
+            >{{ n }}</button>
+          </div>
+        </div>
+
+        <!-- Start / waiting -->
+        <button *ngIf="isHost" class="start-btn" (click)="startGame()">
+          ▶ {{ 'lobby.startGame' | t }}
+        </button>
+        <div *ngIf="!isHost" class="waiting-host">
+          <div class="wh-spinner"></div>
+          <span>{{ 'lobby.waitingForHost' | t }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel der: jugadores -->
+    <div class="lobby-players">
+      <h3>
+        {{ 'lobby.players' | t }}
+        <span class="count">{{ state.players.length }}</span>
+      </h3>
+      <div class="players-list">
+        <div
+          class="player-card"
+          *ngFor="let p of state.players; trackBy: trackPlayer"
+          [style.--pc]="p.color"
+          [class.host]="p.isHost"
+          [class.you]="p.id === roomService.myId"
+        >
+          <div class="pc-avatar" [style.background]="p.color">{{ p.avatar }}</div>
+          <div class="pc-info">
+            <div class="pc-name">
+              {{ p.name }}
+              <span class="pc-you" *ngIf="p.id === roomService.myId">({{ 'common.you' | t }})</span>
+            </div>
+            <div class="pc-badge" *ngIf="p.isHost">👑 {{ 'lobby.host' | t }}</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="leave-btn" (click)="leaveRoom()">← {{ 'lobby.leave' | t }}</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     INTRO DE VARIANTE (overlay 5s antes del countdown)
+     ============================================================ -->
+<section *ngIf="state && phase === 'countdown' && state.nextVariant && countdownValue === 0"
+         class="stage intro-stage">
+  <button class="intro-close" (click)="leaveRoom()" [attr.aria-label]="'lobby.leave' | t">✕</button>
+  <div class="intro-card">
+    <div class="intro-emoji">{{ nextVariantEmoji }}</div>
+    <div class="intro-tag">{{ 'solo.variant.tag' | t }}</div>
+    <div class="intro-name">{{ nextVariantLabel }}</div>
+    <div class="intro-hint">{{ nextVariantHint }}</div>
+    <div class="intro-progress"><span class="ip-bar"></span></div>
+  </div>
+</section>
+
+<!-- ============================================================
+     COUNTDOWN
+     ============================================================ -->
+<section *ngIf="state && phase === 'countdown' && countdownValue > 0" class="stage countdown-stage">
+  <div class="cd-content">
+    <div class="cd-tag">
+      {{ nextVariantEmoji }} {{ nextVariantLabel }}
+    </div>
+    <div class="cd-label">{{ 'countdown.getReady' | t }}</div>
+    <div class="cd-number" [attr.data-n]="countdownValue">{{ countdownValue }}</div>
+  </div>
+</section>
+
+<!-- ============================================================
+     PLAYING (incluye reveal de respuesta correcta tras la ronda)
+     ============================================================ -->
+<section *ngIf="state && (phase === 'playing' || (phase === 'roundResult' && showingReveal))"
+         class="stage playing-stage">
+
+  <!-- Barra única de info -->
+  <header class="game-bar">
+    <div class="gb-info">
+      <span class="gb-mode">{{ variantEmoji }} {{ variantLabel }}</span>
+      <span class="gb-sep">·</span>
+      <span class="gb-level">R{{ state.currentRoundNumber }}/{{ state.settings.totalRounds }}</span>
+      <span *ngIf="showProgress" class="gb-progress">
+        {{ myTapCount }}/{{ totalCorrectPositions }}
+      </span>
+    </div>
+
+    <div class="gb-time" [class.danger]="timeRemaining <= 3">
+      ⏱ {{ timeRemaining }}
+    </div>
+
+    <div class="gb-score">{{ howManyAnswered }}/{{ totalConnected }}</div>
+  </header>
+
+  <!-- Banner especial sudden death (eliminado) -->
+  <div *ngIf="me?.eliminated" class="eliminated-banner">
+    <div class="eb-emoji">💀</div>
+    <div class="eb-title">{{ 'solo.variant.sudden.eliminated' | t }}</div>
+    <div class="eb-text">{{ 'multi.spectatorMode' | t }}</div>
+  </div>
+
+  <!-- Banner flash (mostrando secuencia o esperando respuesta) -->
+  <div *ngIf="flashPreviewActive" class="flash-banner">
+    👁️ {{ 'solo.variant.flash.watching' | t }}
+  </div>
+
+  <div *ngIf="!imagesLoaded" class="loading-center">
+    <div class="loading-dots"><span></span><span></span><span></span></div>
+  </div>
+
+  <!-- Board -->
+  <div class="board-wrapper" *ngIf="imagesLoaded && currentRound">
+    <div class="board"
+         [class.flash-mode]="currentRound.variant === 'flash'"
+         [style.width.px]="boardWidth"
+         [style.height.px]="boardHeight">
+
+      <ng-container *ngFor="let cell of gridCells; trackBy: trackByPosition">
+        <!-- Imagen "fondo" (la repetida): solo si NO es flash y NO es la única -->
+        <img *ngIf="currentRound.variant !== 'flash' && !shouldShowUnique(cell.position)"
+             [src]="currentRound.urlRepeat"
+             class="cell-img"
+             [class.disabled]="youAnswered || flashPreviewActive"
+             [class.wrong-pick]="youSelectedPosition === cell.position && !youAnsweredCorrect"
+             [style.top]="cell.top"
+             [style.left]="cell.left"
+             [style.width.px]="imageSize"
+             [style.height.px]="imageSize"
+             (click)="selectCell(cell.position)"
+             draggable="false"
+             alt="" />
+
+        <!-- Imagen "única" -->
+        <img *ngIf="currentRound.variant !== 'flash' && shouldShowUnique(cell.position)"
+             [src]="currentRound.urlUnique"
+             class="cell-img unique"
+             [class.disabled]="youAnswered || flashPreviewActive"
+             [class.flipped]="currentRound.mirrored"
+             [class.tapped]="isTapped(cell.position)"
+             [style.top]="cell.top"
+             [style.left]="cell.left"
+             [style.width.px]="imageSize"
+             [style.height.px]="imageSize"
+             (click)="selectCell(cell.position)"
+             draggable="false"
+             alt="" />
+
+        <!-- Celda neutra para flash (Simon-says) -->
+        <div *ngIf="currentRound.variant === 'flash'"
+             class="flash-cell"
+             [class.highlight]="isFlashHighlighted(cell.position)"
+             [class.tapped]="isTapped(cell.position)"
+             [class.disabled]="flashPreviewActive"
+             [style.top]="cell.top"
+             [style.left]="cell.left"
+             [style.width.px]="imageSize"
+             [style.height.px]="imageSize"
+             (click)="!flashPreviewActive && selectCell(cell.position)">
+        </div>
+      </ng-container>
+
+      <!-- Badges ✅ durante reveal -->
+      <ng-container *ngIf="showingReveal && currentRound.correctPositions">
+        <div *ngFor="let p of currentRound.correctPositions"
+             class="reveal-badge"
+             [style.top]="cellPos(p).top"
+             [style.left]="cellPos(p).left"
+             [style.width.px]="imageSize"
+             [style.height.px]="imageSize">✅</div>
+      </ng-container>
+    </div>
+  </div>
+
+  <!-- Botón Confirmar (multi: count/double) -->
+  <div *ngIf="requiresConfirm && phase === 'playing' && !youAnswered && !flashPreviewActive && !me?.eliminated"
+       class="confirm-bar">
+    <button class="confirm-btn"
+            [disabled]="myLocalTaps.length === 0"
+            (click)="confirmAnswer()">
+      ✓ {{ 'solo.confirm.button' | t }}
+      <span class="cb-count" *ngIf="myLocalTaps.length > 0">
+        ({{ myLocalTaps.length }})
+      </span>
+    </button>
+  </div>
+
+  <!-- Mini leaderboard flotante -->
+  <div class="mini-leaderboard" *ngIf="state.players.length > 1">
+    <div class="ml-player"
+         *ngFor="let p of sortedPlayers; trackBy: trackPlayer"
+         [style.--pc]="p.color"
+         [class.me]="p.id === roomService.myId">
+      <span class="ml-av" [style.background]="p.color">{{ p.avatar }}</span>
+      <span class="ml-name">{{ p.name }}</span>
+      <span class="ml-icon">{{ getPlayerIcon(p) }}</span>
+      <span class="ml-score">{{ p.score }}</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     ROUND RESULT (entre rondas)
+     ============================================================ -->
+<section *ngIf="state && phase === 'roundResult' && !showingReveal" class="stage result-stage">
+  <div class="result-card">
+    <div class="rc-head">
+      <div class="rc-tag">
+        {{ 'playing.roundLabel' | t }} {{ state.currentRoundNumber }} / {{ state.settings.totalRounds }}
+      </div>
+      <h2>{{ 'round.results' | t }}</h2>
+    </div>
+
+    <div class="rc-list">
+      <div class="rc-row"
+           *ngFor="let p of sortedPlayers; let i = index; trackBy: trackPlayer"
+           [style.--pc]="p.color"
+           [class.first]="i === 0"
+           [class.me]="p.id === roomService.myId">
+        <div class="rc-rank">{{ i + 1 }}</div>
+        <div class="rc-avatar" [style.background]="p.color">{{ p.avatar }}</div>
+        <div class="rc-info">
+          <div class="rc-name">
+            {{ p.name }}
+            <span class="rc-you" *ngIf="p.id === roomService.myId">({{ 'common.you' | t }})</span>
+          </div>
+          <div class="rc-stats">
+            <span class="rc-icon">{{ getPlayerIcon(p) }}</span>
+            <span class="rc-time">{{ getPlayerResponseTime(p) }}</span>
+          </div>
+        </div>
+        <div class="rc-score">{{ p.score }}</div>
+      </div>
+    </div>
+
+    <button *ngIf="isHost && state.currentRoundNumber < state.settings.totalRounds"
+            class="rc-next" (click)="nextRound()">
+      {{ 'round.nextRound' | t }} →
+    </button>
+    <button *ngIf="isHost && state.currentRoundNumber >= state.settings.totalRounds"
+            class="rc-next" (click)="nextRound()">
+      🏆 {{ 'round.showFinal' | t }}
+    </button>
+    <div *ngIf="!isHost" class="waiting-host">
+      <div class="wh-spinner"></div>
+      <span>{{ 'lobby.waitingForHost' | t }}</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FINAL
+     ============================================================ -->
+<section *ngIf="state && phase === 'final'" class="stage final-stage">
+  <div class="final-wrap">
+
+    <!-- Caso A: hay un único ganador (con puntos > 0) -->
+    <div class="winner-section" *ngIf="hasSingleWinner && winner" [style.--pc]="winner.color">
+      <div class="confetti">
+        <span *ngFor="let _ of [].constructor(30); let i = index"
+              [style.--i]="i"
+              [style.--d]="i * 0.15"></span>
+      </div>
+      <div class="winner-crown">👑</div>
+      <div class="winner-label">{{ 'final.winner' | t }}</div>
+      <div class="winner-avatar" [style.background]="winner.color">{{ winner.avatar }}</div>
+      <div class="winner-name">{{ winner.name }}</div>
+      <div class="winner-score">{{ winner.score }} <span>{{ 'round.points' | t }}</span></div>
+    </div>
+
+    <!-- Caso B: empate entre 2+ jugadores con puntos > 0 -->
+    <div class="tie-section" *ngIf="hasTie && !noOneScored">
+      <div class="confetti">
+        <span *ngFor="let _ of [].constructor(20); let i = index"
+              [style.--i]="i"
+              [style.--d]="i * 0.2"></span>
+      </div>
+      <div class="tie-icon">🤝</div>
+      <div class="tie-label">{{ 'final.tie' | t }}</div>
+      <div class="tie-avatars">
+        <div class="tie-av"
+             *ngFor="let p of topPlayers"
+             [style.background]="p.color"
+             [title]="p.name">
+          {{ p.avatar }}
+        </div>
+      </div>
+      <div class="tie-names">
+        <span *ngFor="let p of topPlayers; let last = last">
+          {{ p.name }}<span *ngIf="!last">, </span>
+        </span>
+      </div>
+      <div class="tie-score">{{ topPlayers[0].score }} <span>{{ 'round.points' | t }}</span></div>
+    </div>
+
+    <!-- Caso C: nadie acertó (todos en cero) -->
+    <div class="noone-section" *ngIf="noOneScored">
+      <div class="noone-icon">🤷</div>
+      <div class="noone-label">{{ 'final.noWinner' | t }}</div>
+      <div class="noone-text">{{ 'final.noWinnerDesc' | t }}</div>
+    </div>
+
+    <div class="final-podium">
+      <div class="pod-slot"
+           *ngFor="let p of finalRanking; let i = index; trackBy: trackPlayer"
+           [style.--pc]="p.color"
+           [class.p1]="i === 0 && hasSingleWinner"
+           [class.tied]="hasTie && !noOneScored && topPlayers.includes(p)">
+        <div class="pod-av" [style.background]="p.color">{{ p.avatar }}</div>
+        <div class="pod-name">{{ p.name }}</div>
+        <div class="pod-score">{{ p.score }} {{ 'round.points' | t }}</div>
+        <div class="pod-stats">✓ {{ p.correctAnswers }} · ✕ {{ p.wrongAnswers }}</div>
+        <div class="pod-rank">#{{ i + 1 }}</div>
+      </div>
+    </div>
+
+    <div class="final-actions">
+      <button *ngIf="isHost" class="f-btn primary" (click)="playAgain()">
+        🔁 {{ 'final.playAgain' | t }}
+      </button>
+      <button class="f-btn secondary" (click)="newRoom()">
+        ➕ {{ 'final.newRoom' | t }}
+      </button>
+      <button class="f-btn secondary" (click)="goHome()">
+        🏠 {{ 'final.home' | t }}
+      </button>
+    </div>
+  </div>
+</section>
